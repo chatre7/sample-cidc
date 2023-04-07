@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - "jenkins_home:/var/jenkins_home"
+    depends_on:
+      - gitea
+    environment:
+      - "JAVA_OPTS=-Djenkins.install.runSetupWizard=false"
+
+  gitea:
+    image: gitea/gitea:latest
+    ports:
+      - "3000:3000"
+      - "22:22"
+    volumes:
+      - "gitea_data:/data"
+    environment:
+      - "DB_TYPE=mysql"
+      - "DB_HOST=mysql"
+      - "DB_NAME=gitea"
+      - "DB_USER=root"
+      - "DB_PASS=password"
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysql_data:/var/lib/mysql"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=password"
+      - "MYSQL_DATABASE=gitea"
+
+volumes:
+  jenkins_home:
+  gitea_data:
+  mysql_data:
